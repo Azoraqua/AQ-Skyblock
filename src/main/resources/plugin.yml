@@ -1,0 +1,8 @@
+name: AQ-Skyblock
+version: 1.0.0
+main: com.azoraqua.skyblock.SkyblockPlugin
+api-version: 1.15
+commands:
+  skyblock:
+    description: Base command of AQ-Skyblock.
+    aliases: [sb]

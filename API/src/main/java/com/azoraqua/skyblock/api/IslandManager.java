@@ -3,6 +3,7 @@ package com.azoraqua.skyblock.api;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import java.util.Collection;
 import java.util.UUID;
 
 public interface IslandManager {
@@ -10,6 +11,8 @@ public interface IslandManager {
     void addIsland(Island island);
 
     void removeIsland(Island island);
+
+    Collection<Island> getIslands();
 
     Island getIsland(UUID id);
 

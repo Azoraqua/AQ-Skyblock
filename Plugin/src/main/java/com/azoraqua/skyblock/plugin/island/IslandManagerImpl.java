@@ -42,6 +42,11 @@ public final class IslandManagerImpl implements IslandManager {
     }
 
     @Override
+    public Collection<Island> getIslands() {
+        return Collections.unmodifiableCollection(islands);
+    }
+
+    @Override
     public Island getIsland(UUID id) {
         return islands.stream().filter(island -> island.getId().equals(id)).findAny().orElse(null);
     }
@@ -94,7 +99,7 @@ public final class IslandManagerImpl implements IslandManager {
                         try {
                             islandFile.createNewFile();
                         } catch (IOException e) {
-                            Bukkit.getLogger().warning(String.format("Could not create com.azoraqua.skyblock.plugin.island-datafile %s, due to: %s", island.getId(), e.getMessage()));
+                            Bukkit.getLogger().warning(String.format("Could not create island-datafile %s, due to: %s", island.getId(), e.getMessage()));
                         }
                     }
 
@@ -102,9 +107,9 @@ public final class IslandManagerImpl implements IslandManager {
                         writer.write(SkyblockPlugin.GSON.toJson(island));
                         it.remove(); // Remove it from the cache, only if successful. If failed try again next time.
 
-                        Bukkit.getLogger().info(String.format("Serialized com.azoraqua.skyblock.plugin.island %s.", island.getId()));
+                        Bukkit.getLogger().info(String.format("Serialized island %s.", island.getId()));
                     } catch (IOException e) {
-                        Bukkit.getLogger().warning(String.format("Could not serialize com.azoraqua.skyblock.plugin.island %s, due to: %s", island.getId(), e.getMessage()));
+                        Bukkit.getLogger().warning(String.format("Could not serialize island %s, due to: %s", island.getId(), e.getMessage()));
                     }
                 }
 

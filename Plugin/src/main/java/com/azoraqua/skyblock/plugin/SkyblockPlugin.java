@@ -1,17 +1,19 @@
 package com.azoraqua.skyblock.plugin;
 
-import com.azoraqua.skyblock.plugin.handler.IslandHandler;
+import com.azoraqua.skyblock.plugin.command.CommandHandler;
 import com.azoraqua.skyblock.plugin.island.IslandManagerImpl;
 import com.google.gson.Gson;
-import org.bukkit.Bukkit;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.util.Objects;
 
 public final class SkyblockPlugin extends JavaPlugin {
 
     public static final Gson GSON = new Gson();
 
+    private final CommandHandler commandHandler = new CommandHandler(this);
     private final IslandManagerImpl islandManager = new IslandManagerImpl(this, new File(getDataFolder(), "islands"));
 
     @Override
@@ -19,7 +21,9 @@ public final class SkyblockPlugin extends JavaPlugin {
         // Perhaps register some commands or listeners?
         // Perhaps load some data, or not needed?
 
-        Bukkit.getPluginManager().registerEvents(new IslandHandler(), this);
+        final PluginCommand base = Objects.requireNonNull(super.getCommand("skyblock"));
+        base.setExecutor(commandHandler);
+        base.setTabCompleter(commandHandler);
     }
 
     @Override
@@ -30,6 +34,10 @@ public final class SkyblockPlugin extends JavaPlugin {
         if (!islandManager.getIslands().isEmpty()) {
             islandManager.scheduleSerialization();
         }
+    }
+
+    public CommandHandler getCommandHandler() {
+        return commandHandler;
     }
 
     public IslandManagerImpl getIslandManager() {

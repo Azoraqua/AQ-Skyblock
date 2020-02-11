@@ -26,6 +26,10 @@ public final class SkyblockPlugin extends JavaPlugin {
     public void onDisable() {
         // Perhaps de-register commands or listeners?
         // Perhaps save some data, or not needed?
+
+        if (!islandManager.getIslands().isEmpty()) {
+            islandManager.scheduleSerialization();
+        }
     }
 
     public IslandManagerImpl getIslandManager() {

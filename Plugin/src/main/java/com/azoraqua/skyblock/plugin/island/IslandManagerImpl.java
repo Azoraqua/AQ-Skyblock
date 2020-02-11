@@ -77,7 +77,7 @@ public final class IslandManagerImpl implements IslandManager {
         return this.getIsland(player) != null;
     }
 
-    private synchronized void scheduleSerialization() {
+    public synchronized void scheduleSerialization() {
         if (serializationTask == null) {
             Bukkit.getScheduler().runTask(plugin, serializationTask = new SerializationTask());
         }
@@ -100,6 +100,10 @@ public final class IslandManagerImpl implements IslandManager {
                 while (it.hasNext()) {
                     final IslandImpl island = it.next();
                     final File islandFile = new File(dataFolder, island.getId().toString() + STORAGE_FORMAT_EXT);
+
+                    if (!dataFolder.exists()) {
+                        dataFolder.mkdirs();
+                    }
 
                     if (!islandFile.exists()) {
                         try {

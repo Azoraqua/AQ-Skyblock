@@ -5,11 +5,13 @@ import com.azoraqua.skyblock.api.IslandManager;
 import com.azoraqua.skyblock.api.event.IslandCreateEvent;
 import com.azoraqua.skyblock.api.event.IslandDeleteEvent;
 import com.azoraqua.skyblock.plugin.SkyblockPlugin;
+import com.google.gson.JsonObject;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
@@ -54,17 +56,17 @@ public final class IslandManagerImpl implements IslandManager {
 
     @Override
     public Island getIsland(UUID id) {
-        return islands.stream().filter(island -> island.getId().equals(id)).findAny().orElse(null);
+        return islands.stream().filter(island -> island.getId().equals(id)).findAny().orElse((IslandImpl) this.loadIsland(id));
     }
 
     @Override
     public Island getIsland(Player player) {
-        return islands.stream().filter(island -> island.getOwner().equals(player)).findAny().orElse(null);
+        return islands.stream().filter(island -> island.getOwner().equals(player)).findAny().orElse((IslandImpl) this.loadIsland(player));
     }
 
     @Override
     public Island getIsland(Location location) {
-        return islands.stream().filter(island -> island.getLocation().equals(location) || island.getLocation().distance(location) <= 1).findAny().orElse(null);
+        return islands.stream().filter(island -> island.getLocation().equals(location) || island.getLocation().distance(location) <= 1).findAny().orElse(null); // May be null.
     }
 
     @Override
@@ -84,6 +86,47 @@ public final class IslandManagerImpl implements IslandManager {
 
         if (!serializationTask.running) {
             serializationTask.running = true;
+        }
+    }
+
+    private Island loadIsland(UUID id) {
+        try (FileReader reader = new FileReader(new File(dataFolder, id.toString() + STORAGE_FORMAT_EXT))) {
+            return SkyblockPlugin.GSON.fromJson(reader, IslandImpl.class);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    // Note: This manipulates the cache as well.
+    private Island loadIsland(Player player) {
+        final File registry = new File(dataFolder, "registry" + STORAGE_FORMAT_EXT);
+
+        if (!registry.exists()) {
+            return null;
+        }
+
+        try (FileReader registryReader = new FileReader(registry)) {
+            final JsonObject o = SkyblockPlugin.GSON.fromJson(registryReader, JsonObject.class);
+
+            if (o.has(player.getUniqueId().toString())) {
+                final UUID islandId = UUID.fromString(o.get(player.getUniqueId().toString()).getAsString());
+                final File islandFile = new File(dataFolder, islandId.toString() + STORAGE_FORMAT_EXT);
+
+                if (islandFile.exists()) {
+                    try (FileReader islandReader = new FileReader(islandFile)) {
+                        final IslandImpl island = SkyblockPlugin.GSON.fromJson(islandReader, IslandImpl.class);
+
+                        if (island != null && island.getOwner().equals(player)) {
+                            islands.add(island);
+                            return island;
+                        }
+                    }
+                }
+            }
+
+            return null;
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
         }
     }
 

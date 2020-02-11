@@ -2,6 +2,8 @@ package com.azoraqua.skyblock.plugin.island;
 
 import com.azoraqua.skyblock.api.Island;
 import com.azoraqua.skyblock.api.IslandManager;
+import com.azoraqua.skyblock.api.event.IslandCreateEvent;
+import com.azoraqua.skyblock.api.event.IslandDeleteEvent;
 import com.azoraqua.skyblock.plugin.SkyblockPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -33,12 +35,16 @@ public final class IslandManagerImpl implements IslandManager {
             scheduleSerialization();
         }
 
-        islands.add((IslandImpl) island);
+        if (islands.add((IslandImpl) island)) {
+            Bukkit.getPluginManager().callEvent(new IslandCreateEvent(island));
+        }
     }
 
     @Override
     public void removeIsland(Island island) {
-        islands.remove((IslandImpl) island);
+        if (islands.remove((IslandImpl) island)) {
+            Bukkit.getPluginManager().callEvent(new IslandDeleteEvent(island));
+        }
     }
 
     @Override

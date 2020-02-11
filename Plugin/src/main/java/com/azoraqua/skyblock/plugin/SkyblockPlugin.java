@@ -9,6 +9,7 @@ import java.io.File;
 public final class SkyblockPlugin extends JavaPlugin {
 
     public static final Gson GSON = new Gson();
+
     private final IslandManagerImpl islandManager = new IslandManagerImpl(this, new File(getDataFolder(), "islands"));
 
     @Override
@@ -21,5 +22,9 @@ public final class SkyblockPlugin extends JavaPlugin {
     public void onDisable() {
         // Perhaps de-register commands or listeners?
         // Perhaps save some data, or not needed?
+    }
+
+    public IslandManagerImpl getIslandManager() {
+        return islandManager;
     }
 }

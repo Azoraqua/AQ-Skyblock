@@ -107,6 +107,8 @@ public final class IslandManagerImpl implements IslandManager {
                         Bukkit.getLogger().warning(String.format("Could not serialize com.azoraqua.skyblock.plugin.island %s, due to: %s", island.getId(), e.getMessage()));
                     }
                 }
+
+                running = false;
             }
         }
     }

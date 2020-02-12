@@ -7,13 +7,13 @@ import java.util.List;
 
 public abstract class SubCommand {
 
-    private final String name;
-    private final String description;
-    private final String[] aliases;
-    private final String usage;
-    private final String permission;
-    private final boolean onlyPlayer;
-    private final int minimumArgs;
+    protected String name;
+    protected String description;
+    protected String[] aliases;
+    protected String usage;
+    protected String permission;
+    protected boolean onlyPlayer;
+    protected int minimumArgs;
 
     public SubCommand(String name, String description, String[] aliases, String usage, String permission, boolean onlyPlayer, int minimumArgs) {
         this.name = name;

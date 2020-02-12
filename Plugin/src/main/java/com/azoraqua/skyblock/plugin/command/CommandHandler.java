@@ -1,6 +1,7 @@
 package com.azoraqua.skyblock.plugin.command;
 
 import com.azoraqua.skyblock.plugin.SkyblockPlugin;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -13,10 +14,25 @@ import java.util.*;
 public final class CommandHandler implements CommandExecutor, TabCompleter {
 
     private final SkyblockPlugin plugin;
+    private final String baseName;
     private final Set<SubCommand> subCommands = new LinkedHashSet<>();
 
-    public CommandHandler(SkyblockPlugin plugin) {
+    public CommandHandler(SkyblockPlugin plugin, String baseName) {
         this.plugin = plugin;
+        this.baseName = baseName;
+    }
+
+    public void registerSubCommand(SubCommand subCommand) {
+        subCommand.name = StringUtils.capitalize(subCommand.name);
+        subCommand.permission = subCommand.permission.replace("{base}", baseName);
+        subCommand.usage = subCommand.usage.replace("{base}", baseName);
+        subCommand.description = subCommand.description.replace("{base}", baseName);
+
+        subCommands.add(subCommand);
+    }
+
+    public void unregisterSubCommand(SubCommand subCommand) {
+        subCommands.remove(subCommand);
     }
 
     public Collection<SubCommand> getSubCommands() {
@@ -29,6 +45,10 @@ public final class CommandHandler implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (!command.getName().equalsIgnoreCase(baseName)) {
+            return false;
+        }
+
         if (args.length == 0) {
             sender.sendMessage(subCommands.stream().map(c -> c.toHelpMessage(sender)).toArray(String[]::new));
             return true;

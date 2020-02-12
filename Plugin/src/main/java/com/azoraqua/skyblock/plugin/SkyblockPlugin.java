@@ -1,6 +1,9 @@
 package com.azoraqua.skyblock.plugin;
 
 import com.azoraqua.skyblock.plugin.command.CommandHandler;
+import com.azoraqua.skyblock.plugin.command.CreateIslandCommand;
+import com.azoraqua.skyblock.plugin.command.DeleteIslandCommand;
+import com.azoraqua.skyblock.plugin.command.InfoCommand;
 import com.azoraqua.skyblock.plugin.island.IslandFactoryImpl;
 import com.azoraqua.skyblock.plugin.island.IslandManagerImpl;
 import com.google.gson.Gson;
@@ -14,7 +17,7 @@ public final class SkyblockPlugin extends JavaPlugin {
 
     public static final Gson GSON = new Gson();
 
-    private final CommandHandler commandHandler = new CommandHandler(this);
+    private CommandHandler commandHandler;
     private final IslandManagerImpl islandManager = new IslandManagerImpl(this, new File(getDataFolder(), "islands"));
     private final IslandFactoryImpl islandFactory = new IslandFactoryImpl(this);
 
@@ -26,6 +29,11 @@ public final class SkyblockPlugin extends JavaPlugin {
         final PluginCommand base = Objects.requireNonNull(super.getCommand("skyblock"));
         base.setExecutor(commandHandler);
         base.setTabCompleter(commandHandler);
+
+        commandHandler = new CommandHandler(this, base.getName());
+        commandHandler.registerSubCommand(new CreateIslandCommand("create", "Create an island.", new String[]{"c"}, "/{base} create", "{base}.command.create;{base}.*", false, 0));
+        commandHandler.registerSubCommand(new DeleteIslandCommand("delete", "Delete an island.", new String[]{"d"}, "/{base} delete", "{base}.command.delete;{base}.*", false, 0));
+        commandHandler.registerSubCommand(new InfoCommand("info", "Gather information about an island.", new String[]{"i"}, "/{base} info", "{base}.command.info", false, 0));
     }
 
     @Override

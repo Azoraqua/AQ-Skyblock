@@ -1,6 +1,7 @@
 package com.azoraqua.skyblock.plugin;
 
 import com.azoraqua.skyblock.plugin.command.CommandHandler;
+import com.azoraqua.skyblock.plugin.island.IslandFactoryImpl;
 import com.azoraqua.skyblock.plugin.island.IslandManagerImpl;
 import com.google.gson.Gson;
 import org.bukkit.command.PluginCommand;
@@ -15,6 +16,7 @@ public final class SkyblockPlugin extends JavaPlugin {
 
     private final CommandHandler commandHandler = new CommandHandler(this);
     private final IslandManagerImpl islandManager = new IslandManagerImpl(this, new File(getDataFolder(), "islands"));
+    private final IslandFactoryImpl islandFactory = new IslandFactoryImpl(this);
 
     @Override
     public void onEnable() {
@@ -42,5 +44,9 @@ public final class SkyblockPlugin extends JavaPlugin {
 
     public IslandManagerImpl getIslandManager() {
         return islandManager;
+    }
+
+    public IslandFactoryImpl getIslandFactory() {
+        return islandFactory;
     }
 }
